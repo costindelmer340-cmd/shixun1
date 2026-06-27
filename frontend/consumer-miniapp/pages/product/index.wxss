@@ -1,0 +1,40 @@
+.product-main {
+  text-align: center;
+}
+
+.product-image {
+  width: 100%;
+  height: 420rpx;
+  border-radius: 20rpx;
+  background: #f8fafc;
+  margin-bottom: 26rpx;
+}
+
+.price-large {
+  color: #1f7ae0;
+  font-size: 48rpx;
+  font-weight: 800;
+  margin-top: 16rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #eef2f7;
+}
+
+.info-row:last-child {
+  border-bottom: 0;
+}
+
+.desc {
+  line-height: 1.7;
+  margin-top: 12rpx;
+}
+
+.feature-list {
+  display: flex;
+  gap: 14rpx;
+  margin-top: 20rpx;
+}

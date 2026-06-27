@@ -1,9 +1,13 @@
 <view class="page">
   <view class="card login-card">
     <view class="title">手机号登录</view>
-    <view class="muted">当前先使用演示登录，后续替换为真实手机号验证码登录。</view>
+    <view class="muted">演示账号：13338907581，验证码：123456。</view>
     <input class="input" placeholder="请输入手机号" bindinput="onPhoneInput" />
     <input class="input" placeholder="请输入验证码" bindinput="onCodeInput" />
     <button class="primary-btn" bindtap="onLogin">登录进入</button>
+    <button class="wechat-btn" bindtap="onWechatLogin">
+      <image class="wechat-icon" src="/assets/platforms/wechat.png" mode="aspectFill" />
+      <text>微信一键登录</text>
+    </button>
   </view>
 </view>

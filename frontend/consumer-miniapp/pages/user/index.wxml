@@ -1,7 +1,37 @@
 <view class="page">
+  <view class="profile-card card">
+    <image class="avatar" src="{{profile.avatar}}" mode="aspectFill" />
+    <view class="profile-main">
+      <view class="title">{{profile.nickname}}</view>
+      <view class="muted">手机号：{{profile.phone}}</view>
+      <view class="tag">已绑定：{{profile.bindPlatform}}</view>
+    </view>
+    <button class="edit-btn" bindtap="editProfile">修改</button>
+  </view>
+
   <view class="card">
-    <view class="title">consumer_demo</view>
-    <view class="muted">已绑定：抖音商城</view>
-    <view class="muted">最近咨询：2026-06-25 09:35:00</view>
+    <view class="sub-title">个人信息</view>
+    <view class="info-row">
+      <text class="muted">昵称</text>
+      <text>{{profile.nickname}}</text>
+    </view>
+    <view class="info-row">
+      <text class="muted">电话号码</text>
+      <text>{{profile.phone}}</text>
+    </view>
+    <view class="info-row">
+      <text class="muted">最近咨询</text>
+      <text>{{profile.lastConsult}}</text>
+    </view>
+  </view>
+
+  <view class="card" bindtap="manageAddress">
+    <view class="between">
+      <view>
+        <view class="sub-title">地址管理</view>
+        <view class="muted address">{{profile.address}}</view>
+      </view>
+      <view class="arrow">›</view>
+    </view>
   </view>
 </view>

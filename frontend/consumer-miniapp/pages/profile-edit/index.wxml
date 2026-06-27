@@ -1,0 +1,20 @@
+<view class="page">
+  <view class="card">
+    <view class="sub-title">基本资料</view>
+    <view class="avatar-row">
+      <image class="avatar" src="{{form.avatar}}" mode="aspectFill" />
+      <button class="avatar-btn" bindtap="chooseAvatar">更换头像</button>
+    </view>
+    <view class="form-item">
+      <view class="label">昵称</view>
+      <input value="{{form.nickname}}" data-field="nickname" bindinput="onInput" placeholder="请输入昵称" />
+    </view>
+    <view class="form-item">
+      <view class="label">电话号码</view>
+      <view class="readonly">{{phone}}</view>
+      <view class="tip">手机号用于演示账号登录，当前不可修改。</view>
+    </view>
+  </view>
+
+  <button class="primary-btn" bindtap="saveProfile">保存修改</button>
+</view>

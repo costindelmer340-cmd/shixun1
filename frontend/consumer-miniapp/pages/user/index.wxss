@@ -1,1 +1,48 @@
+.profile-card {
+  display: flex;
+  align-items: center;
+}
 
+.avatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 36rpx;
+  background: #eaf2ff;
+  margin-right: 22rpx;
+  flex-shrink: 0;
+}
+
+.profile-main {
+  flex: 1;
+}
+
+.edit-btn {
+  width: 120rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  border-radius: 999rpx;
+  background: #eef4ff;
+  color: #1f7ae0;
+  font-size: 24rpx;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eef2f7;
+}
+
+.info-row:last-child {
+  border-bottom: 0;
+}
+
+.address {
+  margin-top: 10rpx;
+  max-width: 560rpx;
+}
+
+.arrow {
+  color: #98a2b3;
+  font-size: 44rpx;
+}

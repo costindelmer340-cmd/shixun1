@@ -1,1 +1,148 @@
+.page {
+  padding-bottom: 150rpx;
+}
 
+.consult-order {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.consult-thumb {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 16rpx;
+  background: #eaf2ff;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.consult-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.consult-arrow {
+  color: #98a2b3;
+  font-size: 44rpx;
+}
+
+.order-switch {
+  white-space: nowrap;
+  margin-bottom: 24rpx;
+}
+
+.order-chip {
+  display: inline-flex;
+  align-items: center;
+  width: 330rpx;
+  padding: 16rpx;
+  margin-right: 16rpx;
+  border: 1rpx solid #e5eaf2;
+  border-radius: 16rpx;
+  background: #ffffff;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+.order-chip-active {
+  border-color: #1f7ae0;
+  background: #edf5ff;
+}
+
+.chip-thumb {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 12rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.chip-text {
+  min-width: 0;
+  font-size: 24rpx;
+  color: #101828;
+}
+
+.chip-text view,
+.chip-text text {
+  display: block;
+  max-width: 220rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip-text text {
+  margin-top: 4rpx;
+  color: #667085;
+  font-size: 22rpx;
+}
+
+.chat-list {
+  min-height: 720rpx;
+  padding-bottom: 30rpx;
+}
+
+.msg-row {
+  margin-bottom: 24rpx;
+  max-width: 86%;
+}
+
+.msg-right {
+  margin-left: auto;
+  text-align: right;
+}
+
+.msg-left {
+  margin-right: auto;
+}
+
+.speaker {
+  color: #667085;
+  font-size: 22rpx;
+  margin-bottom: 8rpx;
+}
+
+.bubble {
+  display: inline-block;
+  background: #ffffff;
+  border: 1rpx solid #eef2f7;
+  border-radius: 18rpx;
+  padding: 20rpx 24rpx;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.bubble-user {
+  background: #1f7ae0;
+  color: #ffffff;
+  border-color: #1f7ae0;
+}
+
+.input-card {
+  position: fixed;
+  left: 24rpx;
+  right: 24rpx;
+  bottom: 24rpx;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: #ffffff;
+  border: 1rpx solid #eef2f7;
+  border-radius: 16rpx;
+  padding: 18rpx;
+  box-sizing: border-box;
+}
+
+.input-card input {
+  flex: 1;
+  height: 72rpx;
+}
+
+.send-btn {
+  width: 150rpx;
+  background: #1f7ae0;
+  color: #fff;
+  border-radius: 12rpx;
+}

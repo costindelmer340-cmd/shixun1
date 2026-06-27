@@ -1,0 +1,40 @@
+<view class="page" wx:if="{{product}}">
+  <view class="product-main card">
+    <image class="product-image" src="{{product.image}}" mode="aspectFit" />
+    <view class="title">{{product.title}}</view>
+    <view class="muted">{{product.spec}}</view>
+    <view class="price-large">￥{{product.price}}</view>
+  </view>
+
+  <view class="card">
+    <view class="sub-title">订单信息</view>
+    <view class="info-row">
+      <text class="muted">订单编号</text>
+      <text>{{product.no}}</text>
+    </view>
+    <view class="info-row">
+      <text class="muted">平台来源</text>
+      <text>{{product.platform}}</text>
+    </view>
+    <view class="info-row">
+      <text class="muted">订单状态</text>
+      <text>{{product.status}}</text>
+    </view>
+    <view class="info-row">
+      <text class="muted">售后状态</text>
+      <text>{{product.afterSale}}</text>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="sub-title">商品描述</view>
+    <view class="muted desc">商品信息来自外部电商平台同步，用于确认售后商品、规格、价格和订单来源。</view>
+    <view class="feature-list">
+      <view class="tag">官方标配</view>
+      <view class="tag">支持售后</view>
+      <view class="tag">平台订单</view>
+    </view>
+  </view>
+
+  <button class="primary-btn" bindtap="applyAfterSale">申请售后</button>
+</view>

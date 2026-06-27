@@ -3,7 +3,9 @@ import { saveDemoToken } from "../../utils/auth"
 Page({
   data: {
     phone: "",
-    code: ""
+    code: "",
+    demoPhone: "13338907581",
+    demoCode: "123456"
   },
   onPhoneInput(e) {
     this.setData({ phone: e.detail.value })
@@ -12,7 +14,16 @@ Page({
     this.setData({ code: e.detail.value })
   },
   onLogin() {
+    const phone = this.data.phone.trim()
+    const code = this.data.code.trim()
+    if (phone !== this.data.demoPhone || code !== this.data.demoCode) {
+      wx.showToast({ title: "手机号或验证码错误", icon: "none" })
+      return
+    }
     saveDemoToken()
     wx.switchTab({ url: "/pages/home/index" })
+  },
+  onWechatLogin() {
+    wx.showToast({ title: "微信一键登录后续接入", icon: "none" })
   }
 })

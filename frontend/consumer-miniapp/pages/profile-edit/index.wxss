@@ -1,0 +1,58 @@
+.avatar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid #eef2f7;
+}
+
+.avatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 56rpx;
+  background: #eef2f7;
+}
+
+.avatar-btn {
+  width: 190rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 12rpx;
+  border: 1rpx solid #d8e1ef;
+  background: #ffffff;
+  color: #1f7ae0;
+  font-size: 26rpx;
+}
+
+.form-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #eef2f7;
+}
+
+.form-item:last-child {
+  border-bottom: 0;
+}
+
+.label {
+  color: #667085;
+  font-size: 24rpx;
+  margin-bottom: 12rpx;
+}
+
+input {
+  height: 72rpx;
+  font-size: 30rpx;
+  color: #101828;
+}
+
+.readonly {
+  height: 56rpx;
+  line-height: 56rpx;
+  color: #344054;
+  font-size: 30rpx;
+}
+
+.tip {
+  color: #98a2b3;
+  font-size: 22rpx;
+}

@@ -1,1 +1,52 @@
+.page-title {
+  font-size: 38rpx;
+  font-weight: 800;
+  margin: 8rpx 0 24rpx;
+}
 
+.order-card {
+  display: flex;
+  background: #ffffff;
+  border: 1rpx solid #eef2f7;
+  border-radius: 18rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.product-thumb {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 18rpx;
+  background: #eaf2ff;
+  margin-right: 22rpx;
+  flex-shrink: 0;
+}
+
+.order-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-title {
+  font-size: 31rpx;
+  font-weight: 800;
+  color: #101828;
+  max-width: 310rpx;
+}
+
+.price {
+  color: #1f7ae0;
+  font-weight: 700;
+}
+
+.order-bottom {
+  margin-top: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-link {
+  color: #1f7ae0;
+  font-size: 24rpx;
+}

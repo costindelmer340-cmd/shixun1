@@ -10,3 +10,23 @@
   padding: 0 24rpx;
   background: #fff;
 }
+
+.wechat-btn {
+  margin-top: 22rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14rpx;
+  border: 1rpx solid #d6ead4;
+  border-radius: 12rpx;
+  background: #ffffff;
+  color: #1f7a32;
+  font-size: 30rpx;
+}
+
+.wechat-icon {
+  width: 42rpx;
+  height: 42rpx;
+  border-radius: 8rpx;
+}

@@ -1,0 +1,23 @@
+<view class="page">
+  <view class="card">
+    <view class="sub-title">默认收货/退货联系地址</view>
+    <view class="form-item">
+      <view class="label">联系人</view>
+      <input value="{{form.name}}" data-field="name" bindinput="onInput" placeholder="请输入联系人" />
+    </view>
+    <view class="form-item">
+      <view class="label">联系电话</view>
+      <input value="{{form.phone}}" data-field="phone" bindinput="onInput" placeholder="请输入联系电话" />
+    </view>
+    <view class="form-item">
+      <view class="label">所在地区</view>
+      <input value="{{form.region}}" data-field="region" bindinput="onInput" placeholder="请输入所在地区" />
+    </view>
+    <view class="form-item">
+      <view class="label">详细地址</view>
+      <input value="{{form.detail}}" data-field="detail" bindinput="onInput" placeholder="请输入详细地址" />
+    </view>
+  </view>
+
+  <button class="primary-btn" bindtap="saveAddress">保存地址</button>
+</view>

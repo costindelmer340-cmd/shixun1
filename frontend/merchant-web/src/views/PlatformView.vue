@@ -2,10 +2,19 @@
   <div class="panel">
     <div class="toolbar">
       <div>
-        <h2 class="section-title">抖音店铺绑定</h2>
+        <h2 class="section-title">店铺绑定</h2>
         <span class="page-kicker">用于同步订单、售后、评价和回写处理结果</span>
       </div>
-      <el-button type="primary" @click="mockAuthorize">模拟授权</el-button>
+    </div>
+    <div class="platform-grid">
+      <div v-for="item in platformOptions" :key="item.code" class="platform-card">
+        <img :src="item.icon" :alt="item.name" />
+        <div>
+          <strong>{{ item.name }}</strong>
+          <span>{{ item.desc }}</span>
+        </div>
+        <el-button type="primary" @click="mockAuthorize(item.name)">绑定</el-button>
+      </div>
     </div>
     <el-alert
       title="该页优先显示后端真实绑定列表，若未登录或接口不可用，则回退到演示数据。"
@@ -56,11 +65,21 @@ import { loadPlatformBindings, loadSyncTasks, triggerSync } from '../api'
 import { loadListWithFallback } from '../api/normalize'
 import { platformBindings, syncTasks } from '../data/mock'
 import { isDemoMode } from '../utils/auth'
+import douyinIcon from '../assets/platforms/douyin.png'
+import taobaoIcon from '../assets/platforms/taobao.png'
+import pddIcon from '../assets/platforms/pinduoduo.png'
+import jdIcon from '../assets/platforms/jd.png'
 
 const bindingData = ref<typeof platformBindings>([])
 const syncTaskData = ref<typeof syncTasks>(syncTasks)
 const loading = ref(false)
 const syncingType = ref('')
+const platformOptions = [
+  { code: 'DOUYIN', name: '抖音商城', desc: '同步抖店订单与售后', icon: douyinIcon },
+  { code: 'TAOBAO', name: '淘宝', desc: '预留淘宝店铺接入', icon: taobaoIcon },
+  { code: 'PDD', name: '拼多多', desc: '预留拼多多店铺接入', icon: pddIcon },
+  { code: 'JD', name: '京东', desc: '预留京东店铺接入', icon: jdIcon }
+]
 
 onMounted(async () => {
   loading.value = true
@@ -89,12 +108,57 @@ async function runSync(syncType: string) {
   }
 }
 
-function mockAuthorize() {
+function mockAuthorize(platformName = '抖音商城') {
   bindingData.value = [{
     ...currentBinding.value,
+    platformName,
     authStatus: 'ACTIVE',
     lastSyncedAt: '2026-06-25 19:30:00'
   }]
-  ElMessage({ type: 'success', message: '抖音店铺已完成模拟授权' })
+  ElMessage({ type: 'success', message: `${platformName}店铺已完成模拟绑定` })
 }
 </script>
+
+<style scoped>
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.platform-card {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #e4e8f0;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fff;
+}
+
+.platform-card img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.platform-card strong,
+.platform-card span {
+  display: block;
+}
+
+.platform-card span {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+@media (max-width: 1280px) {
+  .platform-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+</style>
