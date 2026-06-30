@@ -1,0 +1,56 @@
+<view class="container">
+  <view class="status-tabs">
+    <view 
+      class="tab-item {{currentTab === '' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab=""
+    >全部</view>
+    <view 
+      class="tab-item {{currentTab === 'pending' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="pending"
+    >待审核</view>
+    <view 
+      class="tab-item {{currentTab === 'processing' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="processing"
+    >处理中</view>
+    <view 
+      class="tab-item {{currentTab === 'completed' ? 'active' : ''}}" 
+      bindtap="switchTab" 
+      data-tab="completed"
+    >已完成</view>
+  </view>
+
+  <view class="ticket-list">
+    <view 
+      wx:for="{{tickets}}" 
+      wx:key="ticket_id" 
+      class="ticket-item" 
+      bindtap="goToDetail" 
+      data-after-sale-no="{{item.ticket_id}}"
+    >
+      <view class="ticket-header">
+        <view class="ticket-type">{{getTypeLabel(item.ticket_type)}}</view>
+        <view class="ticket-status {{item.status.toLowerCase().replace('_', '-')}}">{{getStatusLabel(item.status)}}</view>
+      </view>
+      <view class="ticket-title">{{item.title}}</view>
+      <view class="ticket-desc">{{item.description}}</view>
+      <view class="ticket-meta">
+        <view class="meta-item">提交时间: {{item.formatted_time || item.created_at}}</view>
+        <view wx:if="{{item.requested_amount}}" class="meta-item">申请金额: ¥{{item.requested_amount}}</view>
+      </view>
+      <view class="ticket-footer">
+        <view wx:if="{{item.status === 'PENDING' || item.status === 'PENDING_REVIEW'}}" class="action-area">
+          <view class="cancel-btn" bindtap="cancelTicket" data-ticket-id="{{item.ticket_id}}" catchtap>取消申请</view>
+        </view>
+        <view class="arrow">></view>
+      </view>
+    </view>
+
+    <view wx:if="{{tickets.length === 0}}" class="empty-state">
+      <view class="empty-icon">📋</view>
+      <view class="empty-text">暂无售后申请</view>
+    </view>
+  </view>
+</view>

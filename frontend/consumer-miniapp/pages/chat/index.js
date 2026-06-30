@@ -1,15 +1,26 @@
 import { getTwentyMallBindings } from "../../utils/auth"
+import { enrichOrderDisplay } from "../../utils/order-display"
 
-const API_BASE = "http://localhost:8080/api/demo-chat"
+const API_BASE = "http://localhost:8085"
+
+function formatMessageTime(value) {
+  if (!value) return ""
+  const text = String(value).replace("T", " ").replace(/\.\d+$/, "")
+  const match = text.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?/)
+  if (!match) return text
+  const [, year, month, day, hour, minute, second = "00"] = match
+  return `${year}.${Number(month)}.${Number(day)} ${hour.padStart(2, "0")}:${minute.padStart(2, "0")}:${second.padStart(2, "0")}`
+}
 
 function normalizeMessage(item) {
-  const senderType = item.senderType || "AI"
-  const isUser = senderType === "CONSUMER"
-  const isStaff = senderType === "STAFF"
+  const senderType = item.sender_type || "ai"
+  const isUser = senderType === "user"
+  const isStaff = senderType === "staff"
   return {
     id: item.id,
     role: isUser ? "user" : (isStaff ? "staff" : "ai"),
     speaker: isUser ? "我" : (isStaff ? "人工客服" : "AI客服"),
+    time: formatMessageTime(item.created_at),
     content: item.content
   }
 }
@@ -22,23 +33,37 @@ Page({
     orders: [],
     activeOrderNo: "",
     consultingOrder: null,
-    messages: []
+    messages: [],
+    conversationId: null
   },
   onLoad() {
     this.applyPlatformBinding()
   },
   onShow() {
     this.applyPlatformBinding()
-    this.startPolling()
-  },
-  onHide() {
-    this.stopPolling()
-  },
-  onUnload() {
-    this.stopPolling()
   },
   onInput(e) {
     this.setData({ inputValue: e.detail.value })
+  },
+  getStatusText(status) {
+    const statusMap = {
+      'PENDING_PAYMENT': '待付款',
+      'PAID': '已付款',
+      'SHIPPED': '已发货',
+      'IN_TRANSIT': '运输中',
+      'DELIVERED': '已送达',
+      'RECEIVED': '已签收',
+      'COMPLETED': '已完成',
+      'CANCELLED': '已取消'
+    }
+    return statusMap[status] || status
+  },
+  getAfterSaleStatus(status) {
+    if (!status || status === 'NONE' || status === 'none') return '未申请'
+    if (status === 'AFTER_SALE' || status === 'after_sale') return '处理中'
+    if (status === 'APPLIED') return '处理中'
+    if (status === 'CLOSED') return '已关闭'
+    return status
   },
   applyPlatformBinding() {
     const bindings = getTwentyMallBindings()
@@ -50,53 +75,65 @@ Page({
         consultingOrder: null,
         messages: [],
         inputValue: "",
-        mode: "AI"
+        mode: "AI",
+        conversationId: null
       })
       return
     }
-    const requests = bindings.map((binding) => new Promise((resolve) => {
-      wx.request({
-        url: `http://localhost:8080/api/twenty-mall/consumer/orders?accountNo=${binding.accountNo}`,
-        success: (res) => {
-          const list = (res.data && res.data.data) || []
-          resolve(list.map((item) => ({
-            no: item.no,
-            title: item.title,
-            status: item.status,
-            afterSale: item.afterSale,
-            platform: "20商城",
-            accountNo: binding.accountNo,
-            merchant: "20商城演示店铺",
-            price: item.price,
-            image: item.image,
-            spec: item.spec,
-            service: item.afterSale === "未申请" ? "可申请售后" : "售后处理中"
-          })))
-        },
-        fail: () => resolve([])
-      })
-    }))
-    Promise.all(requests).then((result) => {
-      const nextOrders = result.reduce((all, list) => all.concat(list), [])
-      if (!nextOrders.length) {
+    wx.request({
+      url: `${API_BASE}/order/list?user_id=${wx.getStorageSync('userId') || 1}`,
+      success: (res) => {
+        console.log('chat order list response:', res)
+        const list = (res.data && res.data.data && res.data.data.orders) || []
+        const nextOrders = list.map((item) => enrichOrderDisplay({
+          no: item.external_order_no || item.order_no,
+          title: item.platform_code === 'DOUYIN' ? 'Aurora X1 智能手机' : '20商城商品',
+          status: this.getStatusText(item.order_status),
+          afterSale: this.getAfterSaleStatus(item.after_sale_status),
+          platform: item.platform_code === 'DOUYIN' ? '抖音商城' : '20商城',
+          price: parseFloat(item.total_amount || 0).toFixed(2),
+          image: item.platform_code === 'DOUYIN' ? '/assets/products/phone.png' : '/assets/products/twenty-keyboard.png',
+          spec: item.platform_code === 'DOUYIN' ? '星河银｜12GB+256GB' : '标准规格',
+          service: item.after_sale_status === 'NONE' || !item.after_sale_status ? '可申请售后' : '售后处理中',
+          orderId: item.id
+        }))
+        if (!nextOrders.length) {
+          this.setData({
+            platformBound: true,
+            orders: [],
+            activeOrderNo: "",
+            consultingOrder: null,
+            messages: []
+          })
+          return
+        }
+        const pendingOrderNo = wx.getStorageSync("pendingChatOrderNo")
+        const activeOrder = nextOrders.find((item) => item.no === pendingOrderNo)
+          || nextOrders.find((item) => item.no === this.data.activeOrderNo)
+          || nextOrders[0]
+        if (pendingOrderNo) {
+          wx.removeStorageSync("pendingChatOrderNo")
+        }
         this.setData({
           platformBound: true,
+          orders: nextOrders,
+          activeOrderNo: activeOrder.no,
+          consultingOrder: activeOrder
+        })
+        this.loadConversation()
+      },
+      fail: () => {
+        this.setData({
+          platformBound: false,
           orders: [],
           activeOrderNo: "",
           consultingOrder: null,
-          messages: []
+          messages: [],
+          inputValue: "",
+          mode: "AI",
+          conversationId: null
         })
-        return
       }
-      const activeOrder = nextOrders.find((item) => item.no === this.data.activeOrderNo) || nextOrders[0]
-      this.setData({
-        platformBound: true,
-        orders: nextOrders,
-        activeOrderNo: activeOrder.no,
-        consultingOrder: activeOrder
-      })
-      this.loadConversation()
-      this.startPolling()
     })
   },
   goOrderDetail() {
@@ -112,7 +149,8 @@ Page({
       consultingOrder: order,
       mode: "AI",
       inputValue: "",
-      messages: []
+      messages: [],
+      conversationId: null
     })
     this.loadConversation()
   },
@@ -127,73 +165,83 @@ Page({
     const value = this.data.inputValue.trim()
     if (!value) return
     const wantsHuman = value.includes("人工") || value.includes("客服")
-    const no = this.data.activeOrderNo
+    const order = this.data.consultingOrder
     this.setData({ inputValue: "", mode: wantsHuman ? "人工" : this.data.mode })
     wx.request({
-      url: `${API_BASE}/conversations/${no}/messages`,
+      url: `${API_BASE}/conversation/send`,
       method: "POST",
+      header: { "Content-Type": "application/json" },
       data: {
-        senderType: "CONSUMER",
-        content: value
+        merchant_id: 1,
+        user_id: wx.getStorageSync('userId') || 1,
+        message: value,
+        conversation_id: this.data.conversationId,
+        order_id: order.orderId,
+        order_no: order.no
       },
-      success: () => {
-        if (wantsHuman) {
-          this.transferToStaff()
-          return
+      success: (res) => {
+        console.log('send message response:', res)
+        if (res.data && res.data.code === 200) {
+          const data = res.data.data
+          this.setData({
+            conversationId: data.conversation_id,
+            mode: data.escalate ? "人工" : "AI"
+          })
+          this.loadMessages(data.conversation_id)
         }
-        this.loadMessages()
       },
       fail: () => {
         wx.showToast({ title: "消息发送失败，请确认后端已启动", icon: "none" })
       }
     })
   },
-  transferToStaff() {
-    wx.request({
-      url: `${API_BASE}/conversations/${this.data.activeOrderNo}/transfer`,
-      method: "POST",
-      success: () => {
-        this.setData({ mode: "人工" })
-        this.loadMessages()
-      },
-      fail: () => {
-        wx.showToast({ title: "转人工失败，请稍后重试", icon: "none" })
-      }
-    })
-  },
   loadConversation() {
     if (!this.data.platformBound || !this.data.activeOrderNo) return
+    const userId = wx.getStorageSync('userId') || 1
+    const orderNo = this.data.consultingOrder?.no
+    let url = `${API_BASE}/conversation/list?user_id=${userId}`
+    if (orderNo) {
+      url += `&order_no=${orderNo}`
+    }
     wx.request({
-      url: `${API_BASE}/conversations/${this.data.activeOrderNo}`,
+      url: url,
       success: (res) => {
+        console.log('conversation list response:', res)
         const data = res.data && res.data.data
-        if (data) {
-          this.setData({ mode: data.status === "AGENT_SERVING" ? "人工" : "AI" })
+        if (data && data.id) {
+          this.setData({
+            conversationId: data.id,
+            mode: data.status === "AGENT_SERVING" ? "人工" : "AI"
+          })
+          this.loadMessages(data.id)
+        } else if (Array.isArray(data) && data.length > 0) {
+          const conversation = data[0]
+          this.setData({
+            conversationId: conversation.id,
+            mode: conversation.status === "AGENT_SERVING" ? "人工" : "AI"
+          })
+          this.loadMessages(conversation.id)
+        } else {
+          this.setData({ messages: [], conversationId: null })
         }
-        this.loadMessages()
       },
-      fail: () => this.loadMessages()
-    })
-  },
-  loadMessages() {
-    if (!this.data.platformBound || !this.data.activeOrderNo) return
-    wx.request({
-      url: `${API_BASE}/conversations/${this.data.activeOrderNo}/messages`,
-      success: (res) => {
-        const list = (res.data && res.data.data) || []
-        this.setData({ messages: list.map(normalizeMessage) })
+      fail: () => {
+        this.setData({ messages: [], conversationId: null })
       }
     })
   },
-  startPolling() {
-    this.stopPolling()
-    if (!this.data.platformBound || !this.data.activeOrderNo) return
-    this.pollingTimer = setInterval(() => this.loadConversation(), 2500)
-  },
-  stopPolling() {
-    if (this.pollingTimer) {
-      clearInterval(this.pollingTimer)
-      this.pollingTimer = null
-    }
+  loadMessages(conversationId) {
+    if (!conversationId) return
+    wx.request({
+      url: `${API_BASE}/conversation/messages?conversation_id=${conversationId}`,
+      success: (res) => {
+        console.log('conversation messages response:', res)
+        const list = (res.data && res.data.data) || []
+        this.setData({ messages: list.map(normalizeMessage) })
+      },
+      fail: () => {
+        this.setData({ messages: [] })
+      }
+    })
   }
 })

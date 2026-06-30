@@ -1,0 +1,99 @@
+<view class="container">
+  <view wx:if="{{ticket && ticket.ticket_id}}">
+    <view class="ticket-header">
+      <view class="header-left">
+        <view class="ticket-type">{{getTypeLabel(ticket.ticket_type)}}</view>
+        <view class="ticket-id">申请编号: {{ticket.ticket_id}}</view>
+      </view>
+      <view class="ticket-status {{ticket.status}}">{{getStatusLabel(ticket.status)}}</view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">申请信息</view>
+      <view class="info-list">
+        <view class="info-item">
+          <view class="info-label">申请类型</view>
+          <view class="info-value">{{getTypeLabel(ticket.ticket_type) || '其他'}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">申请金额</view>
+          <view class="info-value highlight">￥{{ticket.requested_amount || 0}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">提交时间</view>
+          <view class="info-value">{{ticket.formatted_time || '-'}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">问题描述</view>
+          <view class="info-value desc">{{ticket.description || '暂无描述'}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">处理进度</view>
+      <view class="info-list">
+        <view class="info-item">
+          <view class="info-label">审核人</view>
+          <view class="info-value">{{ticket.assignee_name || '-'}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">审核时间</view>
+          <view class="info-value">{{ticket.reviewed_at ? formatTime(ticket.reviewed_at) : '-'}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">审核意见</view>
+          <view class="info-value">{{ticket.review_opinion || '-'}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">处理结果</view>
+          <view class="info-value">{{ticket.close_reason || '-'}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section" wx:if="{{afterSale.materials && afterSale.materials.length > 0}}">
+      <view class="section-title">售后材料</view>
+      <view class="material-list">
+        <view wx:for="{{afterSale.materials}}" wx:key="id" class="material-item">
+          <image class="material-thumb" src="{{item.material_url}}" mode="aspectFill" />
+          <view class="material-info">
+            <view class="material-name">{{item.material_type}}</view>
+            <view class="muted small">{{formatTime(item.created_at)}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section" wx:if="{{afterSale.refunds && afterSale.refunds.length > 0}}">
+      <view class="section-title">退款记录</view>
+      <view class="info-list">
+        <view wx:for="{{afterSale.refunds}}" wx:key="id" class="info-item">
+          <view class="info-label">退款单号</view>
+          <view class="info-value">{{item.refund_no}}</view>
+        </view>
+        <view wx:for="{{afterSale.refunds}}" wx:key="id" class="info-item">
+          <view class="info-label">退款金额</view>
+          <view class="info-value highlight">￥{{item.refund_amount}}</view>
+        </view>
+        <view wx:for="{{afterSale.refunds}}" wx:key="id" class="info-item">
+          <view class="info-label">退款状态</view>
+          <view class="info-value">{{item.refund_status}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="action-bar">
+      <button wx:if="{{ticket.status === 'PENDING' || ticket.status === 'PENDING_REVIEW'}}" class="action-btn cancel" bindtap="cancelTicket">取消申请</button>
+    </view>
+  </view>
+
+  <view wx:else>
+    <view class="empty-state">
+      <view class="empty-icon">📋</view>
+      <view class="empty-text">没有找到售后申请信息</view>
+      <view class="empty-desc">请从订单详情页面提交售后申请</view>
+      <button class="action-btn" bindtap="goBack">返回订单列表</button>
+    </view>
+  </view>
+</view>
